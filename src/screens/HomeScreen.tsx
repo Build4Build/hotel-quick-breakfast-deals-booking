@@ -18,6 +18,7 @@ import { getTodaysDeals, getHotelById } from '../utils/mockData';
 import { RootStackParamList, BreakfastDeal } from '../types';
 import { colors, spacing, borderRadius, shadows, typography } from '../utils/theme';
 import { getRandomBreakfastImage } from '../services/imageService';
+import ReservationModal from '../components/ReservationModal';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -29,6 +30,8 @@ const HomeScreen = () => {
   const [deals, setDeals] = useState<BreakfastDeal[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isReservationModalVisible, setIsReservationModalVisible] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<BreakfastDeal | null>(null);
   
   // Fetch deals and add random images for some
   useEffect(() => {
@@ -141,6 +144,11 @@ const HomeScreen = () => {
     }
   };
 
+  const handleReservePress = (deal: BreakfastDeal) => {
+    setSelectedDeal(deal);
+    setIsReservationModalVisible(true);
+  };
+
   const renderDealCard = ({ item, index }: { item: BreakfastDeal; index: number }) => {
     // Only render current card
     if (index !== currentIndex) return null;
@@ -180,7 +188,7 @@ const HomeScreen = () => {
           contentFit="cover"
           transition={300}
           placeholderContentFit="cover"
-          placeholder={require('../../assets/placeholder-image.png')}
+          placeholder={require('../../assets/placeholder-breakfast.png')}
         />
 
         <View style={styles.cardContent}>
@@ -207,10 +215,10 @@ const HomeScreen = () => {
           </View>
           
           <TouchableOpacity
-            style={styles.detailButton}
-            onPress={() => navigation.navigate('DealDetail', { dealId: item.id })}
+            style={styles.reserveButton}
+            onPress={() => handleReservePress(item)}
           >
-            <Text style={styles.detailButtonText}>View Details</Text>
+            <Text style={styles.reserveButtonText}>Reserve Now</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -221,7 +229,7 @@ const HomeScreen = () => {
     return (
       <SafeAreaView style={[styles.container, styles.loadingContainer]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading today's breakfast deals...</Text>
+        <Text style={styles.loadingText}>Finding the best breakfast deals for you...</Text>
       </SafeAreaView>
     );
   }
@@ -230,7 +238,7 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.subtitle}>
-          Swipe to discover today's breakfast deals at your hotels
+          Swipe to discover exclusive breakfast deals at your booked hotels
         </Text>
       </View>
 
@@ -246,7 +254,8 @@ const HomeScreen = () => {
         ) : (
           <View style={styles.noDealsContainer}>
             <Text style={styles.noDealsText}>
-              No breakfast deals available for your booked hotels.
+              No breakfast deals available at your booked hotels right now.
+              Please check back later for new offers.
             </Text>
           </View>
         )}
@@ -281,6 +290,17 @@ const HomeScreen = () => {
           <Text style={styles.footerButtonText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {selectedDeal && (
+        <ReservationModal
+          isVisible={isReservationModalVisible}
+          onClose={() => {
+            setIsReservationModalVisible(false);
+            setSelectedDeal(null);
+          }}
+          deal={selectedDeal}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -377,13 +397,14 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeights.bold as any,
     color: colors.primary,
   },
-  detailButton: {
+  reserveButton: {
     backgroundColor: colors.primary,
     paddingVertical: spacing.m,
     borderRadius: borderRadius.m,
     alignItems: 'center',
+    marginTop: spacing.s,
   },
-  detailButtonText: {
+  reserveButtonText: {
     color: colors.white,
     fontSize: typography.fontSizes.m,
     fontWeight: typography.fontWeights.semiBold as any,
