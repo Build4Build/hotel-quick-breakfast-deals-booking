@@ -9,6 +9,7 @@ A beautiful React Native mobile app for discovering and booking breakfast deals 
 - **Hotel Information**: Browse your booked hotels and see available deals
 - **Profile Management**: Manage your preferences and favorite deals
 - **Settings**: Customize the app to your liking
+- **Real Images**: Beautiful high-quality images from Unsplash
 
 ## Tech Stack
 
@@ -20,6 +21,7 @@ A beautiful React Native mobile app for discovering and booking breakfast deals 
 - **React Native Gesture Handler**: Gestures and animations
 - **React Native Reanimated**: Animation library
 - **Async Storage**: Local data persistence
+- **Unsplash API**: High-quality images
 
 ## Project Structure
 
@@ -59,14 +61,52 @@ src/
 - Scan the QR code from the Expo development server
 - The app will load on your device
 
-## Build for Production
+## Deployment with EAS (Expo Application Services)
 
-To create a production build:
+This app is configured for deployment using EAS, which makes it easy to build and publish to both the App Store and Google Play Store.
 
-```
-expo build:android  # For Android
-expo build:ios      # For iOS
-```
+### Prerequisites
+
+1. Create an [Expo](https://expo.dev/) account
+2. Install EAS CLI:
+   ```
+   npm install -g eas-cli
+   ```
+3. Log in to EAS from the CLI:
+   ```
+   eas login
+   ```
+
+### Configure App Stores
+
+#### iOS App Store
+1. Register for an Apple Developer account
+2. Create a new app in App Store Connect
+3. Generate required provisioning profiles and certificates
+4. Update `eas.json` with your Apple ID, Team ID, and App ID
+
+#### Google Play Store
+1. Create a Google Play Developer account
+2. Create a new app in the Google Play Console
+3. Generate a service account key and download the JSON file
+4. Update `eas.json` with the path to your service account key
+
+### Build and Submit
+
+1. Build the app for production:
+   ```
+   eas build --platform all --profile production
+   ```
+
+2. Submit to stores:
+   ```
+   eas submit --platform ios
+   eas submit --platform android
+   ```
+
+## Images Attribution
+
+This app uses images from [Unsplash](https://unsplash.com/), a free high-quality photo service. In a production environment, please follow Unsplash attribution requirements.
 
 ## License
 

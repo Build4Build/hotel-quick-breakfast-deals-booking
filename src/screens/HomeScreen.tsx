@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
   Animated,
   PanResponder,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,6 +17,7 @@ import { Image } from 'expo-image';
 import { getTodaysDeals, getHotelById } from '../utils/mockData';
 import { RootStackParamList, BreakfastDeal } from '../types';
 import { colors, spacing, borderRadius, shadows, typography } from '../utils/theme';
+import { getRandomBreakfastImage } from '../services/imageService';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -24,8 +26,50 @@ const CARD_WIDTH = width - spacing.l * 2;
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const [deals] = useState<BreakfastDeal[]>(getTodaysDeals());
+  const [deals, setDeals] = useState<BreakfastDeal[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch deals and add random images for some
+  useEffect(() => {
+    const fetchDeals = async () => {
+      setIsLoading(true);
+      try {
+        // Get deals from our mock data
+        const todaysDeals = getTodaysDeals();
+        
+        // For demo purposes, add a random deal with a dynamically fetched image
+        if (todaysDeals.length > 0) {
+          // Create a copy of the deals
+          const updatedDeals = [...todaysDeals];
+          
+          // Add a new random deal with a dynamically fetched image
+          const randomDeal: BreakfastDeal = {
+            ...todaysDeals[0], // Clone an existing deal as a base
+            id: 'dynamic-deal-1',
+            title: 'Today\'s Special Breakfast',
+            description: 'A special breakfast option featuring the chef\'s selection, fresh ingredients, and a seasonal twist.',
+            price: 22.99,
+            originalPrice: 36.99,
+            image: getRandomBreakfastImage(), // Use dynamic image!
+          };
+          
+          updatedDeals.push(randomDeal);
+          setDeals(updatedDeals);
+        } else {
+          setDeals(todaysDeals);
+        }
+      } catch (error) {
+        console.error('Error fetching deals:', error);
+        // Fallback to original deals if there's an error
+        setDeals(getTodaysDeals());
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchDeals();
+  }, []);
   
   // Setting up swipe animation
   const position = useRef(new Animated.ValueXY()).current;
@@ -135,6 +179,8 @@ const HomeScreen = () => {
           style={styles.cardImage}
           contentFit="cover"
           transition={300}
+          placeholderContentFit="cover"
+          placeholder={require('../../assets/placeholder-image.png')}
         />
 
         <View style={styles.cardContent}>
@@ -170,6 +216,15 @@ const HomeScreen = () => {
       </Animated.View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Loading today's breakfast deals...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -234,6 +289,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: spacing.m,
+    fontSize: typography.fontSizes.m,
+    color: colors.textLight,
   },
   header: {
     paddingHorizontal: spacing.l,
