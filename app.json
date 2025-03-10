@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Hotel Breakfast Deals",
+    "slug": "hotel-quick-breakfast-deals-booking",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B00"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hotelbreakfastdeals"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B00"
+      },
+      "package": "com.hotelbreakfastdeals"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "Find the best breakfast buffet deals at your booked hotels. Swipe through daily deals with beautiful photos and quick booking options.",
+    "primaryColor": "#FF6B00"
+  }
+}
