@@ -19,6 +19,7 @@ import { RootStackParamList, BreakfastDeal } from '../types';
 import { colors, spacing, borderRadius, shadows, typography } from '../utils/theme';
 import { getRandomBreakfastImage } from '../services/imageService';
 import ReservationModal from '../components/ReservationModal';
+import PlaceholderImage from '../components/PlaceholderImage';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -187,8 +188,12 @@ const HomeScreen = () => {
           style={styles.cardImage}
           contentFit="cover"
           transition={300}
-          placeholderContentFit="cover"
-          placeholder={require('../../assets/placeholder-breakfast.png')}
+          placeholder={({ style }) => (
+            <PlaceholderImage
+              width={style.width as number}
+              height={style.height as number}
+            />
+          )}
         />
 
         <View style={styles.cardContent}>
