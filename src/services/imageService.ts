@@ -7,8 +7,7 @@
  * 3. Follow Unsplash attribution requirements
  */
 
-// For demo purposes, using Unsplash Source API which doesn't require authentication
-// but has limitations on customization
+import { API_CONFIG, ApiError, handleApiError } from '../config/api';
 
 // Available categories for breakfast images
 const BREAKFAST_CATEGORIES = [
@@ -32,40 +31,136 @@ const HOTEL_CATEGORIES = [
   'boutique hotel'
 ];
 
+interface UnsplashResponse {
+  urls: {
+    regular: string;
+    raw: string;
+  };
+  alt_description: string;
+  user: {
+    name: string;
+    links: {
+      html: string;
+    };
+  };
+}
+
 /**
- * Get a random breakfast image
- * @returns URL to a high-quality breakfast image
+ * Get a random breakfast image from Unsplash
  */
-export const getRandomBreakfastImage = (): string => {
-  const randomCategory = BREAKFAST_CATEGORIES[Math.floor(Math.random() * BREAKFAST_CATEGORIES.length)];
-  return `https://source.unsplash.com/random/1200x800/?${encodeURIComponent(randomCategory)}`;
+export const getRandomBreakfastImage = async (): Promise<string> => {
+  try {
+    const randomCategory = BREAKFAST_CATEGORIES[Math.floor(Math.random() * BREAKFAST_CATEGORIES.length)];
+    const response = await fetch(
+      `${API_CONFIG.UNSPLASH.BASE_URL}${API_CONFIG.UNSPLASH.ENDPOINTS.RANDOM}?query=${encodeURIComponent(randomCategory)}&orientation=landscape`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${API_CONFIG.UNSPLASH.API_KEY}`,
+          'Accept-Version': 'v1',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new ApiError('Unsplash API failed', response.status);
+    }
+
+    const data: UnsplashResponse = await response.json();
+    return data.urls.regular;
+  } catch (error) {
+    console.error('Error fetching random breakfast image:', error);
+    // Fallback to a static image URL
+    return 'https://images.unsplash.com/photo-1606756790138-261d2b21cd75?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80';
+  }
 };
 
 /**
- * Get a random hotel image
- * @returns URL to a high-quality hotel image
+ * Get a random hotel image from Unsplash
  */
-export const getRandomHotelImage = (): string => {
-  const randomCategory = HOTEL_CATEGORIES[Math.floor(Math.random() * HOTEL_CATEGORIES.length)];
-  return `https://source.unsplash.com/random/1200x800/?${encodeURIComponent(randomCategory)}`;
+export const getRandomHotelImage = async (): Promise<string> => {
+  try {
+    const randomCategory = HOTEL_CATEGORIES[Math.floor(Math.random() * HOTEL_CATEGORIES.length)];
+    const response = await fetch(
+      `${API_CONFIG.UNSPLASH.BASE_URL}${API_CONFIG.UNSPLASH.ENDPOINTS.RANDOM}?query=${encodeURIComponent(randomCategory)}&orientation=landscape`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${API_CONFIG.UNSPLASH.API_KEY}`,
+          'Accept-Version': 'v1',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new ApiError('Unsplash API failed', response.status);
+    }
+
+    const data: UnsplashResponse = await response.json();
+    return data.urls.regular;
+  } catch (error) {
+    console.error('Error fetching random hotel image:', error);
+    // Fallback to a static image URL
+    return 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80';
+  }
 };
 
 /**
  * Get a breakfast image for a specific cuisine type
- * @param cuisineType Type of cuisine (e.g., 'continental', 'american', 'buffet')
- * @returns URL to a relevant breakfast image
  */
-export const getBreakfastImageByCuisine = (cuisineType: string): string => {
-  return `https://source.unsplash.com/random/1200x800/?${encodeURIComponent(`${cuisineType} breakfast`)}`;
+export const getBreakfastImageByCuisine = async (cuisineType: string): Promise<string> => {
+  try {
+    const response = await fetch(
+      `${API_CONFIG.UNSPLASH.BASE_URL}${API_CONFIG.UNSPLASH.ENDPOINTS.SEARCH}?query=${encodeURIComponent(`${cuisineType} breakfast`)}&per_page=1`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${API_CONFIG.UNSPLASH.API_KEY}`,
+          'Accept-Version': 'v1',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new ApiError('Unsplash API failed', response.status);
+    }
+
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].urls.regular;
+    }
+    return getRandomBreakfastImage();
+  } catch (error) {
+    console.error('Error fetching cuisine-specific breakfast image:', error);
+    return getRandomBreakfastImage();
+  }
 };
 
 /**
  * Get a hotel image based on location or type
- * @param hotelType Type or location of hotel (e.g., 'beach', 'mountain', 'luxury')
- * @returns URL to a relevant hotel image
  */
-export const getHotelImageByType = (hotelType: string): string => {
-  return `https://source.unsplash.com/random/1200x800/?${encodeURIComponent(`${hotelType} hotel`)}`;
+export const getHotelImageByType = async (hotelType: string): Promise<string> => {
+  try {
+    const response = await fetch(
+      `${API_CONFIG.UNSPLASH.BASE_URL}${API_CONFIG.UNSPLASH.ENDPOINTS.SEARCH}?query=${encodeURIComponent(`${hotelType} hotel`)}&per_page=1`,
+      {
+        headers: {
+          'Authorization': `Client-ID ${API_CONFIG.UNSPLASH.API_KEY}`,
+          'Accept-Version': 'v1',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new ApiError('Unsplash API failed', response.status);
+    }
+
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].urls.regular;
+    }
+    return getRandomHotelImage();
+  } catch (error) {
+    console.error('Error fetching type-specific hotel image:', error);
+    return getRandomHotelImage();
+  }
 };
 
 // In a real production app with proper authentication, you'd use the full API:

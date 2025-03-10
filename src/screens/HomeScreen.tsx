@@ -10,14 +10,17 @@ import {
   Animated,
   PanResponder,
   ActivityIndicator,
+  ViewStyle,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Image } from 'expo-image';
-import { getTodaysDeals, getHotelById } from '../utils/mockData';
-import { RootStackParamList, BreakfastDeal } from '../types';
+import { RootStackParamList, BreakfastDeal, BookedHotel } from '../types';
 import { colors, spacing, borderRadius, shadows, typography } from '../utils/theme';
 import { getRandomBreakfastImage } from '../services/imageService';
+import { getTodaysDeals, fetchDealById } from '../services/dealService';
+import { fetchHotelById } from '../services/hotelService';
 import ReservationModal from '../components/ReservationModal';
 import PlaceholderImage from '../components/PlaceholderImage';
 
@@ -33,47 +36,68 @@ const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isReservationModalVisible, setIsReservationModalVisible] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState<BreakfastDeal | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [hotels, setHotels] = useState<Record<string, BookedHotel>>({});
+  const [dealImages, setDealImages] = useState<Record<string, string>>({});
   
-  // Fetch deals and add random images for some
+  // Fetch deals and their images
   useEffect(() => {
-    const fetchDeals = async () => {
+    const fetchDealsAndImages = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        // Get deals from our mock data
-        const todaysDeals = getTodaysDeals();
-        
-        // For demo purposes, add a random deal with a dynamically fetched image
-        if (todaysDeals.length > 0) {
-          // Create a copy of the deals
-          const updatedDeals = [...todaysDeals];
-          
-          // Add a new random deal with a dynamically fetched image
-          const randomDeal: BreakfastDeal = {
-            ...todaysDeals[0], // Clone an existing deal as a base
-            id: 'dynamic-deal-1',
-            title: 'Today\'s Special Breakfast',
-            description: 'A special breakfast option featuring the chef\'s selection, fresh ingredients, and a seasonal twist.',
-            price: 22.99,
-            originalPrice: 36.99,
-            image: getRandomBreakfastImage(), // Use dynamic image!
-          };
-          
-          updatedDeals.push(randomDeal);
-          setDeals(updatedDeals);
-        } else {
-          setDeals(todaysDeals);
-        }
+        const todaysDeals = await getTodaysDeals();
+        setDeals(todaysDeals);
+
+        // Fetch images for each deal
+        const imagePromises = todaysDeals.map(async (deal) => {
+          try {
+            const image = await getRandomBreakfastImage();
+            return [deal.id, image];
+          } catch (error) {
+            console.error(`Error fetching image for deal ${deal.id}:`, error);
+            return [deal.id, deal.image]; // Use the deal's default image
+          }
+        });
+
+        const imageResults = await Promise.all(imagePromises);
+        const imageMap = Object.fromEntries(imageResults);
+        setDealImages(imageMap);
       } catch (error) {
         console.error('Error fetching deals:', error);
-        // Fallback to original deals if there's an error
-        setDeals(getTodaysDeals());
+        setError('Unable to load breakfast deals. Please try again later.');
+        // Fallback to mock data
+        setDeals(require('../utils/mockData').getTodaysDeals());
       } finally {
         setIsLoading(false);
       }
     };
     
-    fetchDeals();
+    fetchDealsAndImages();
   }, []);
+  
+  // Fetch hotels data
+  useEffect(() => {
+    const fetchHotels = async () => {
+      const hotelPromises = deals.map(async (deal) => {
+        const hotel = await fetchHotelById(deal.hotelId);
+        if (hotel) {
+          return [deal.hotelId, hotel];
+        }
+        return null;
+      });
+
+      const hotelResults = await Promise.all(hotelPromises);
+      const hotelMap = Object.fromEntries(
+        hotelResults.filter((result): result is [string, BookedHotel] => result !== null)
+      );
+      setHotels(hotelMap);
+    };
+
+    if (deals.length > 0) {
+      fetchHotels();
+    }
+  }, [deals]);
   
   // Setting up swipe animation
   const position = useRef(new Animated.ValueXY()).current;
@@ -145,16 +169,31 @@ const HomeScreen = () => {
     }
   };
 
-  const handleReservePress = (deal: BreakfastDeal) => {
-    setSelectedDeal(deal);
-    setIsReservationModalVisible(true);
+  const handleReservePress = async (deal: BreakfastDeal) => {
+    try {
+      // Fetch the latest deal data before showing the modal
+      const updatedDeal = await fetchDealById(deal.id);
+      if (updatedDeal) {
+        setSelectedDeal(updatedDeal);
+        setIsReservationModalVisible(true);
+      } else {
+        Alert.alert('Error', 'This deal is no longer available.');
+      }
+    } catch (error) {
+      console.error('Error fetching deal details:', error);
+      Alert.alert('Error', 'Unable to load deal details. Please try again.');
+    }
   };
+
+  interface PlaceholderProps {
+    style: ViewStyle;
+  }
 
   const renderDealCard = ({ item, index }: { item: BreakfastDeal; index: number }) => {
     // Only render current card
     if (index !== currentIndex) return null;
     
-    const hotel = getHotelById(item.hotelId);
+    const hotel = hotels[item.hotelId];
     const discountPercentage = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
     );
@@ -184,11 +223,11 @@ const HomeScreen = () => {
         </View>
         
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: dealImages[item.id] || item.image }}
           style={styles.cardImage}
           contentFit="cover"
           transition={300}
-          placeholder={({ style }) => (
+          placeholder={({ style }: PlaceholderProps) => (
             <PlaceholderImage
               width={style.width as number}
               height={style.height as number}
@@ -235,6 +274,23 @@ const HomeScreen = () => {
       <SafeAreaView style={[styles.container, styles.loadingContainer]}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Finding the best breakfast deals for you...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, styles.errorContainer]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => {
+            setError(null);
+            setIsLoading(true);
+          }}
+        >
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
@@ -473,6 +529,28 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: typography.fontSizes.s,
     fontWeight: typography.fontWeights.bold as any,
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.l,
+  },
+  errorText: {
+    fontSize: typography.fontSizes.m,
+    color: colors.error,
+    textAlign: 'center',
+    marginBottom: spacing.m,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.l,
+    paddingVertical: spacing.m,
+    borderRadius: borderRadius.m,
+  },
+  retryButtonText: {
+    color: colors.white,
+    fontSize: typography.fontSizes.m,
+    fontWeight: typography.fontWeights.semiBold as any,
   },
 });
 
