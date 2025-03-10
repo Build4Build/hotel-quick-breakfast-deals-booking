@@ -268,4 +268,6 @@ const styles = StyleSheet.create({
     color: colors.textLight,
     fontSize: typography.fontSizes.m,
   },
-}); 
+});
+
+export default ReservationModal; 

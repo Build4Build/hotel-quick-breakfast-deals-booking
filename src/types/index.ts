@@ -17,9 +17,9 @@ export interface BreakfastDeal {
   currency: string;
   image: string;
   availableUntil: string; // ISO string
-  ingredients?: string[];
-  dietaryOptions?: string[];
-  timeSlots?: string[];
+  ingredients: string[];
+  dietaryOptions: string[];
+  timeSlots: string[]; // Making this required
 }
 
 export interface BookedHotel extends Hotel {
