@@ -78,7 +78,7 @@ This app is configured for deployment using EAS, which makes it easy to build an
    ```
 
 
-## Who Created This Awesome Script?
+## Who Created This Mobile App?
 
 [![Pierre-Henry Soria](https://s.gravatar.com/avatar/a210fe61253c43c869d71eaed0e90149?s=200)](https://PH7.me "Pierre-Henry Soria’s personal website")
 
@@ -124,7 +124,7 @@ This app uses images from [Unsplash](https://unsplash.com/), a free high-quality
 
 ## License
 
-MIT
+Distributed under MIT license.
 
 
 <!-- GitHub's Markdown reference links -->
