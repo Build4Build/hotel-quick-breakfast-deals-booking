@@ -77,6 +77,22 @@ This app is configured for deployment using EAS, which makes it easy to build an
    eas login
    ```
 
+
+## Who Created This Awesome Script?
+
+[![Pierre-Henry Soria](https://s.gravatar.com/avatar/a210fe61253c43c869d71eaed0e90149?s=200)](https://PH7.me "Pierre-Henry Soria’s personal website")
+
+**Pierre-Henry Soria** — a **super passionate engineer** who loves automating content creation efficiently! 🚀
+Enthusiast of YouTube, AI, learning, and—of course—writing! 😊
+Find me at [pH7.me](https://ph7.me) 💫
+
+☕️ Enjoying this project? **[Buy me a coffee](https://ko-fi.com/phenry)** (spoiler: I love almond flat white 😋)
+
+[!\[@phenrysay\]\[twitter-icon\]](https://x.com/phenrysay "Follow me on X")
+[!\[YouTube Tech Videos\]\[youtube-icon\]](https://www.youtube.com/@pH7Programming "My YouTube Tech Channel")
+[!\[pH-7\]\[github-icon\]](https://github.com/pH-7 "Follow me on GitHub")
+
+
 ### Configure App Stores
 
 #### iOS App Store
