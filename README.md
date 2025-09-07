@@ -1,4 +1,4 @@
-# Hotel Breakfast Deals
+ # Hotel Breakfast Deals
 
 A beautiful React Native mobile app for discovering and booking breakfast deals at hotels you've already booked. The app features a modern UI with high-quality images and an intuitive interface.
 
@@ -120,6 +120,14 @@ Enjoying this project? **[Buy me a coffee](https://ko-fi.com/phenry)** (spoiler:
 ## Images Attribution
 
 This app uses images from [Unsplash](https://unsplash.com/), a free high-quality photo service. In a production environment, please follow Unsplash attribution requirements.
+
+
+## 🎥 Me Building This with AI
+
+[![Me Building Hotel Breakfast Deals](https://i1.ytimg.com/vi/Mu_S6dEcZqg/sddefault.jpg)](https://youtu.be/Mu_S6dEcZqg)
+
+👉 [Click here to watch on YouTube](https://youtu.be/Mu_S6dEcZqg)
+
 
 ## License
 
