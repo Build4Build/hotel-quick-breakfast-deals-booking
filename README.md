@@ -65,6 +65,7 @@ src/
 
 This app is configured for deployment using EAS, which makes it easy to build and publish to both the App Store and Google Play Store.
 
+
 ### Prerequisites
 
 1. Create an [Expo](https://expo.dev/) account
@@ -89,6 +90,14 @@ Enjoying this project? **[Buy me a coffee](https://ko-fi.com/phenry)** (*my go-t
 [![Pierre-Henry Soria](https://s.gravatar.com/avatar/a210fe61253c43c869d71eaed0e90149?s=200)](https://ph7.me "Pierre-Henry Soria’s personal website")
 
 [![@phenrysay][x-icon]](https://x.com/phenrysay "Follow Me on X") [![YouTube Tech Videos][youtube-icon]](https://www.youtube.com/@pH7Programming "My YouTube Tech Channel") [![pH-7][github-icon]](https://github.com/pH-7 "Follow Me on GitHub") [![BlueSky][bsky-icon]](https://bsky.app/profile/pierrehenry.dev "Follow Me on BlueSky")
+
+
+## 🎥 Me Building This with AI
+
+[![Me Building Hotel Breakfast Deals](https://i1.ytimg.com/vi/Mu_S6dEcZqg/sddefault.jpg)](https://youtu.be/Mu_S6dEcZqg)
+
+👉 [Click here to watch on YouTube](https://youtu.be/Mu_S6dEcZqg)
+
 
 ### Configure App Stores
 
@@ -117,15 +126,11 @@ Enjoying this project? **[Buy me a coffee](https://ko-fi.com/phenry)** (*my go-t
    eas submit --platform android
    ```
 
-## 🎥 Me Building This with AI
-
-[![Me Building Hotel Breakfast Deals](https://i1.ytimg.com/vi/Mu_S6dEcZqg/sddefault.jpg)](https://youtu.be/Mu_S6dEcZqg)
-
-👉 [Click here to watch on YouTube](https://youtu.be/Mu_S6dEcZqg)
 
 ## Images Attribution
 
 This app uses images from [Unsplash](https://unsplash.com/), a free high-quality photo service. In a production environment, please follow Unsplash attribution requirements.
+
 
 ## License
 
